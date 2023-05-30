@@ -1,18 +1,25 @@
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-
+import org.apache.commons.csv.CSVRecord;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-
+import java.util.Map;
+import java.util.List;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-public class Data {
-    public static void main(String[] args) {
 
+public class Data {
+    private Export export;
+
+    public Data(Export export) {
+        this.export = export;
+    }
+
+    public void process() {
         try {
             File inputFile = new File("C:\\Users\\ChristianKu\\Desktop\\BratislavaCourses.my");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -30,7 +37,7 @@ public class Data {
 
                     String status = eElement.getElementsByTagName("STATUS").item(0).getTextContent();
                     String pobocka = eElement.getElementsByTagName("POBOCKA").item(0).getTextContent();
-                    String kod = eElement.getElementsByTagName("KOD").item(0).getTextContent();
+                    String kod = eElement.getElementsByTagName("KOD").item(0).getTextContent().toUpperCase();
                     String datum = eElement.getElementsByTagName("DATUM").item(0).getTextContent();
 
                     if ("Bratislava".equals(pobocka) && "OK".equals(status)) {
@@ -42,9 +49,14 @@ public class Data {
                             // Check if the date falls within a 6-day range
                             if (LocalDate.now().until(date, ChronoUnit.DAYS) <= 15) {
                                 System.out.println("KOD: " + kod +" "+ "Datum: "+datum);
+                                List<CSVRecord> records = export.getRecordsByCode(kod);
+                                if (records != null) {
+                                    for (CSVRecord record : records) {
+                                        System.out.println(record);
+                                    }
+                                }
                             }
                         }
-
                     }
                 }
             }
