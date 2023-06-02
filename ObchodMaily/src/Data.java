@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +20,9 @@ public class Data {
         this.export = export;
     }
 
-    public void process() {
+    public List<MatchingRecord> process() {
+        List<MatchingRecord> matchingRecords = new ArrayList<>();
+
         try {
             File inputFile = new File("C:\\Users\\ChristianKu\\Desktop\\BratislavaCourses.my");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -52,7 +55,7 @@ public class Data {
                                 List<CSVRecord> records = export.getRecordsByCode(kod);
                                 if (records != null) {
                                     for (CSVRecord record : records) {
-                                        System.out.println(record);
+                                        matchingRecords.add(new MatchingRecord(record, datum));
                                     }
                                 }
                             }
@@ -63,5 +66,25 @@ public class Data {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return matchingRecords;
     }
+    public class MatchingRecord {
+        private CSVRecord record;
+        private String datum;
+
+        public MatchingRecord(CSVRecord record, String datum) {
+            this.record = record;
+            this.datum = datum;
+        }
+
+        public CSVRecord getRecord() {
+            return record;
+        }
+
+        public String getDatum() {
+            return datum;
+        }
+    }
+
 }
